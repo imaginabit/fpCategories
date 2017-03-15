@@ -30,8 +30,6 @@ if (!class_exists('FpCategorias') ){
     private $fpCategoriasSetings;
     private $currentCat;
 
-    // private $json_msg;
-
     function __construct()
     {
       global $wpdb, $current_user;
@@ -43,11 +41,7 @@ if (!class_exists('FpCategorias') ){
       $this->plugin_url = plugin_dir_url( __FILE__ );
 
       add_action('admin_menu', array( $this, 'metabox_register' ) );
-      add_action('wp_enqueue_scripts',  array($this, 'styles_script'));
-      //add_action('wp_enqueue_scripts', array($this, 'styles_script'));
       add_action( 'admin_enqueue_scripts', array($this,'load_custom_wp_admin_style') );
-
-
     }
 
     function load_custom_wp_admin_style($hook) {
@@ -71,15 +65,6 @@ if (!class_exists('FpCategorias') ){
     }
 
     function boxes() {
-      // echo plugins_url('fpCategories.js', __FILE__) ;
-      // echo "<br>";
-      //
-      // $enqueue = wp_script_is( 'fpCategorias-script' )? 'si': 'no' ;
-      // $done = wp_script_is( 'fpCategorias-script', 'done' )? 'si': 'no' ;
-      // $todo = wp_script_is( 'fpCategorias-script', 'to_do' )? 'si':'no';
-      // echo "enqueue $enqueue<br> done $done <br>";
-      // echo "todo $todo <br>";
-
       foreach ($this->fpCategoriasSetings['categoriasId'] as $k => $cat) {
         if (get_cat_name($cat) ){
           echo '<b>'.get_cat_name($cat).'</b>';

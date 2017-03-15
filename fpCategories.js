@@ -1,25 +1,12 @@
-
+//some code from https://github.com/Yoast/wordpress-seo/blob/trunk/js/src/wp-seo-metabox-category.js to made this compatible with yoast-seo
 ( function( $ ) {
 	"use strict";
 
   var primaryTermInputTemplate, primaryTermUITemplate, primaryTermScreenReaderTemplate;
   var metaboxTaxonomy;
 
-  function makePrimarySub(termId){
-    console.log('termId', termId);
-    var primaryTermInput;
-
-  	primaryTermInput = $( "#yoast-wpseo-primary-category" );
-  	primaryTermInput.val( termId ).trigger( "change" );
-  }
-
   function termCheckboxHandler( taxonomyName ) {
 		return function() {
-      console.log('termCheckboxHandler');
-      console.log('primary term', getPrimaryTerm( taxonomyName ));
-      console.log( 'this', $(this) );
-      console.log( 'this val', $(this).val() );
-      console.log( '$( this ).prop( "checked" )', $( this ).prop( "checked" ));
 			// If the user unchecks the primary category we have to select any new primary term
 			if ( false === $( this ).prop( "checked" ) && $( this ).val() === getPrimaryTerm( taxonomyName ) ) {
 				makeFirstTermPrimary( taxonomyName );
@@ -32,7 +19,6 @@
 	}
 
   function makeFirstTermPrimary( taxonomyName ) {
-    console.log('make firstTerm great again');
     var firstTerm = metaboxTaxonomy.find( "#" + taxonomyName + 'checklist input[type="checkbox"]:checked:first' );
 
     setPrimaryTerm( taxonomyName, firstTerm.val() );
@@ -139,10 +125,7 @@
 
   $( function() {
 			var html;
-      console.log("fpCategories js");
-
       var taxonomyname = 'category';
-
       metaboxTaxonomy = $( "#fpCategorias-box" );
 
       // Initialize our templates
@@ -154,7 +137,6 @@
 				taxonomy: taxonomyname,
 			} );
 
-
 			metaboxTaxonomy.append( html );
 			updatePrimaryTermSelectors( taxonomyname );
 
@@ -162,13 +144,6 @@
 
 			// When the AJAX Request is done, this event will be fired.
 			metaboxTaxonomy.on( "wpListAddEnd", "#" + taxonomyname + "checklist", termListAddHandler( taxonomyname ) );
-
 			metaboxTaxonomy.on( "click", ".wpseo-make-primary-term", makePrimaryHandler( taxonomyname ) );
-      // metaboxTaxonomy.on("click",".wpseo-make-primary-term",
-      //   function(){
-      //       makePrimarySub( $(this).siblings( "label" ).find( "input" ).val() );
-      //   }
-      // );
-
 	} );
 }( jQuery ) );

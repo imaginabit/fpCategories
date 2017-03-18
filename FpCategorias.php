@@ -47,7 +47,8 @@ if (!class_exists('FpCategorias') ){
     function load_custom_wp_admin_style($hook) {
         //wp_die($hook);
         // Load only on ?page=mypluginname
-        if($hook != 'post.php') {
+
+        if( ! in_array($hook, array('post.php','post-new.php')) ) {
                 return;
         }
         //wp_enqueue_style( 'custom_wp_admin_css', plugins_url('admin-style.css', __FILE__) );
@@ -59,7 +60,7 @@ if (!class_exists('FpCategorias') ){
     function metabox_register(){
       $post_types = get_post_types(array("public" => true));
       foreach ($post_types as $post_type) {
-       if($post_type != 'attachment')
+       if($post_type != 'attachment' && $post_type != 'page')
             add_meta_box("fpCategorias-box" , __('FpCategorias', 'fpCategorias' ), array($this, 'boxes') , $post_type,'side', 'high');
       }
     }

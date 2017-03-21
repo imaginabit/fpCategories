@@ -29,6 +29,7 @@ if (!class_exists('FpCategorias') ){
     private $vesion;
     private $fpCategoriasSetings;
     private $currentCat;
+    private $catPrinted;
 
     function __construct()
     {
@@ -36,9 +37,12 @@ if (!class_exists('FpCategorias') ){
       $this->version = "0.1.0";
       $plugin_prefix = "fpCat_";
       $this->fpCategoriasSetings = array();
+      //$this->fpCategoriasSetings['categoriasId'] = array(1,14);
       $this->fpCategoriasSetings['categoriasId'] = array(1,24);
+      $this->fpCategoriasSetings['selected-first'] = true;
       $this->currentCat = 0;
       $this->plugin_url = plugin_dir_url( __FILE__ );
+      $this->catPrinted = array();
 
       add_action('admin_menu', array( $this, 'metabox_register' ) );
       add_action( 'admin_enqueue_scripts', array($this,'load_custom_wp_admin_style') );
@@ -74,6 +78,59 @@ if (!class_exists('FpCategorias') ){
       }
     }
 
+    function print_categoryList($category,$sel_cats){
+      $value = $category;
+      if ( ! in_array($category->term_id, $this->catPrinted)){
+        echo '<li id="category-'.$value->term_id.'" class="popular-category">
+        <label class="selectit">
+        <input value="'.$value->term_id.'" type="checkbox" name="post_category[]" id="in-category-'.$value->term_id.'"  ';
+        if( in_array($value->term_id,$sel_cats)  ) echo ' checked="checked" ';
+        echo ">";
+        echo $value->name;
+        echo "</label>";
+        $child_categories = get_categories(array('type'=> 'post','child_of'=>$category->term_id,'hide_empty'=>false));
+        if (!empty($child_categories)){
+          //print_r($child_categories);
+          //if ( ) has children
+          echo '<ul class="children">';
+          foreach ($child_categories as $child) {
+            $this->print_categoryList($child,$sel_cats);
+          }
+          echo '</ul>';
+          // fin chindren
+        }
+        echo "</li>";
+        $this->catPrinted[] = $category->term_id;
+      }
+    }
+
+    function print_selected($category,$sel_cats){
+      $value = $category;
+      if ( in_array($value->term_id,$sel_cats) ){
+        echo '<li id="category-'.$value->term_id.'" class="popular-category">
+        <label class="selectit">
+        <input value="'.$value->term_id.'" type="checkbox" name="post_category[]" id="in-category-'.$value->term_id.'"  ';
+        echo ' checked="checked" ';
+        echo ">";
+        echo $value->name;
+        echo "</label>";
+        // $child_categories = get_categories(array('type'=> 'post','child_of'=>$category->term_id,'hide_empty'=>false));
+        // if (!empty($child_categories)){
+        //   //print_r($child_categories);
+        //   //if ( ) has children
+        //   echo '<ul class="children">';
+        //   foreach ($child_categories as $child) {
+        //     $this->print_categoryList($child,$sel_cats);
+        //   }
+        //   echo '</ul>';
+        //   // fin chindren
+        // }
+        echo "</li>";
+        $this->catPrinted[] = $category->term_id;
+      }
+
+    }
+
     function CatBox($catID) {
       echo "\n\n\n<!-- Metabox $catID-->\n";
 
@@ -94,17 +151,16 @@ if (!class_exists('FpCategorias') ){
       $slug = get_category($catID)->slug;
       echo '
       <div id="taxonomy-category" class="categorydiv fpCatBox '.$slug.'">
-        <div id="category-fpCatBox fpCatBox-'.$slug.'" class="tabs-panel">
-        ';
+        <div id="category-fpCatBox fpCatBox-'.$slug.'" class="tabs-panel">';
+
       echo '<ul id="categorychecklist" data-wp-lists="list:category" class="categorychecklist form-no-clear">';
+      if ($this->fpCategoriasSetings['selected-first']){
+        foreach ($cats as $key => $value) {
+          $this->print_selected($value,$sel_cats);
+        }
+      }
       foreach ($cats as $key => $value) {
-        echo '<li id="category-'.$value->term_id.'" class="popular-category">
-          <label class="selectit">
-            <input value="'.$value->term_id.'" type="checkbox" name="post_category[]" id="in-category-'.$value->term_id.'"  ';
-        if( in_array($value->term_id,$sel_cats)  ) echo ' checked="checked" ';
-        echo ">";
-        echo $value->name;
-        echo "</label></li>";
+        $this->print_categoryList($value,$sel_cats);
       }
       echo "</ul>";
       echo '</div></div>';

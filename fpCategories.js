@@ -1,4 +1,5 @@
 //some code from https://github.com/Yoast/wordpress-seo/blob/trunk/js/src/wp-seo-metabox-category.js to made this compatible with yoast-seo
+//
 ( function( $ ) {
 	"use strict";
 
@@ -128,22 +129,26 @@
       var taxonomyname = 'category';
       metaboxTaxonomy = $( "#fpCategorias-box" );
 
-      // Initialize our templates
-		  primaryTermInputTemplate = wp.template( "primary-term-input" );
-		  primaryTermUITemplate = wp.template( "primary-term-ui" );
-		  primaryTermScreenReaderTemplate = wp.template( "primary-term-screen-reader" );
+			if (metaboxTaxonomy !== undefined){
+				// Initialize our templates
+			  primaryTermInputTemplate = wp.template( "primary-term-input" );
+			  primaryTermUITemplate = wp.template( "primary-term-ui" );
+			  primaryTermScreenReaderTemplate = wp.template( "primary-term-screen-reader" );
 
-      html = primaryTermInputTemplate( {
-				taxonomy: taxonomyname,
-			} );
+	      html = primaryTermInputTemplate( {
+					taxonomy: taxonomyname,
+				} );
 
-			metaboxTaxonomy.append( html );
-			updatePrimaryTermSelectors( taxonomyname );
+				metaboxTaxonomy.append( html );
+				updatePrimaryTermSelectors( taxonomyname );
 
-      metaboxTaxonomy.on( "click", 'input[type="checkbox"]', termCheckboxHandler( taxonomyname ) );
+	      metaboxTaxonomy.on( "click", 'input[type="checkbox"]', termCheckboxHandler( taxonomyname ) );
 
-			// When the AJAX Request is done, this event will be fired.
-			metaboxTaxonomy.on( "wpListAddEnd", "#" + taxonomyname + "checklist", termListAddHandler( taxonomyname ) );
-			metaboxTaxonomy.on( "click", ".wpseo-make-primary-term", makePrimaryHandler( taxonomyname ) );
+				// When the AJAX Request is done, this event will be fired.
+				metaboxTaxonomy.on( "wpListAddEnd", "#" + taxonomyname + "checklist", termListAddHandler( taxonomyname ) );
+				metaboxTaxonomy.on( "click", ".wpseo-make-primary-term", makePrimaryHandler( taxonomyname ) );
+			}
+
+
 	} );
 }( jQuery ) );
